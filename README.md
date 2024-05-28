@@ -17,6 +17,7 @@ The Contact Manager is a web application that allows users to efficiently manage
   - React.js
   - Bootstrap
   - Axios
+  - Vite
 - **Backend:**
   - Node.js
   - Express.js
