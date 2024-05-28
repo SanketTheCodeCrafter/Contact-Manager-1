@@ -1,0 +1,114 @@
+.form-container, 
+.add-form-container {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center vertically */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../emg.jpg');
+    /* background-size: cover;   */
+}
+.form-container{
+    height: 100vh;
+}
+.add-form-container{
+    height: 90vh;
+    background-image: full;
+}
+
+.form,
+.add-form {
+    background-color: rgba(255, 255, 255, 0.7); /* Adjusted for proper transparency */
+    border-radius: 8px; /* Fixed syntax for border-radius */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Fixed syntax for box-shadow */
+    padding: 20px;
+    /* Adjust width to make the form smaller */
+    height: auto; /* Adjust height to accommodate dynamic content */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Center content horizontally */
+}
+.form{
+    width: 300px; 
+}
+.add-form{
+    width: 500px; 
+}
+.form h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form .form-group {
+    margin-bottom: 15px;
+    width: 100%; /* Ensure form groups take full width */
+}
+.add-form .form-group {
+  display: flex;
+  align-items: center; /* Ensure form groups take full width */
+}
+.add-form .form-group input{
+    width: 100%;
+    margin-left: 10px;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 0px;
+    border-bottom: 1px solid rgb(43, 42 ,42);
+    background-color: transparent;
+}
+.add-form .form-group input::placeholder{
+    color: rgb(43, 42 ,42)
+}
+.add-form .form-group input:focus{
+  outline:none;
+}
+.form .form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form .form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+.form .form-btn,
+.add-form .form-btn {
+    background-color: rgb(5, 121, 121);
+    color: #fff;
+    padding: 10px;
+    width: 100%;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.errs{
+    color: red;
+}
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: -10px; /* Adjust margin to fit better with inputs */
+    margin-bottom: 10px; /* Space between error message and next input */
+    text-align: left; /* Align error messages to the left */
+    width: 100%; /* Ensure error messages take full width */
+}
+
+.errors {
+    color: red;
+    font-size: 12px;
+    margin-top: -10px; /* Adjust margin to fit better with inputs */
+    margin-bottom: 10px; /* Space between error message and next input */
+    text-align: left; /* Align error messages to the left */
+    width: 100%; /* Ensure error messages take full width */
+}
