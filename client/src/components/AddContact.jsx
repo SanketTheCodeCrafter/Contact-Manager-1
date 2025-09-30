@@ -5,6 +5,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaAt, FaPhoneFlip, FaRegAddressCard, FaUserPlus } from 'react-icons/fa6';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function AddContact() {
     const [values, setValues] = useState({ name: '', email: '', phone: '', address: '' });
     const navigate = useNavigate(); // Correctly call the useNavigate hook
@@ -13,26 +15,26 @@ export default function AddContact() {
         setValues({ ...values, [event.target.name]: event.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
-        axios.post('http://127.0.0.1:3000/contactmyst/add-contacts', values, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}` // Correct usage of localStorage.getItem
-            }
-        })
-        .then(res => {
-            if (res.data.success) {
+        try {
+            const res = await axios.post(`${API_BASE}/contactmyst/add-contacts`, values, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (res.data?.success) {
                 toast.success("Contact added successfully", {
                     position: "top-right",
                     autoClose: 5000
                 });
-                navigate('/dashboard'); // Correct usage of navigate
+                navigate('/dashboard');
             }
-        })
-        .catch(err => {
-            console.log(err);
-        });
+        } catch (err) {
+            console.error('Add contact error', err);
+            const serverData = err.response?.data;
+            toast.error(serverData?.message || 'Network or server error');
+        }
     };
 
     return (

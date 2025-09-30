@@ -6,6 +6,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { UserContext } from '../App';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
 export default function Login() {
     const [values, setValues] = useState({ email: '', password: '' });
     const{user, setUser}=useContext(UserContext)
@@ -16,34 +18,30 @@ export default function Login() {
         setValues({ ...values, [event.target.name]: event.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
        const errs= Validation(values)
        setErrors(errs);
-       if( errs.email ===" " && errs.password === " ")
-             axios.post('http://127.0.0.1:3000/contactmyst/login', values)
-          .then(res=>{ 
-            if(res.data.success){
-
-            toast.success("Login successfully", {
-                position: "top-right",
-                autoClose: 5000
-            })
-           localStorage.setItem("token",res.data.token)
-           setUser(res.data.user)
-            navigate('/dashboard')
-        } 
-        }).catch (err=>{
-          console.log(err)
-            if(err.response.data.errors){
-                setServerErrors( err.response.data.errors)
-            } 
-            else
-           {
-                
-             console.log(err)
+       if( errs.email ===" " && errs.password === " ") {
+          try {
+            const res = await axios.post(`${API_BASE}/contactmyst/login`, values)
+            if(res.data?.success){
+                toast.success("Login successfully", { position: "top-right", autoClose: 5000 })
+                localStorage.setItem("token",res.data.token)
+                setUser(res.data.user)
+                navigate('/dashboard')
             }
-        })
+          } catch (err) {
+            console.log('Login error', err.message, err);
+            const serverData = err.response?.data
+            if (serverData?.errors) {
+              setServerErrors(serverData.errors)
+            } else {
+              // show friendly message in UI or toast
+              toast.error(serverData?.message || 'Network or server error')
+            }
+          }
+       }
     };
 
     return (

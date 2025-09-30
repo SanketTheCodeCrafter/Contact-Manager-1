@@ -11,7 +11,10 @@ import Contacts from './components/Contacts';
 import AddContact from './components/AddContact';
 import EditContact from './components/EditContact';
 import Logout from './components/Logout';
+import Profile from './pages/Profile'; // added
 export const UserContext = createContext(null);
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'; // local API base (no global axios change)
 
 export default function App() {
     const [user, setUser] = useState(null);
@@ -19,18 +22,18 @@ export default function App() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            axios.get('http://127.0.0.1:3000/contactmyst/verify', {
+            axios.get(`${API_BASE}/contactmyst/auth`, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem(token)}`,
+                    Authorization: `Bearer ${token}`,
                 },
             })
             .then(res => {
-                if (res.data.success) {
+                if (res.data?.success) {
                     setUser(res.data.user);
                 }
             })
             .catch(err => {
-                console.log(err);
+                console.log('Auth verify error', err);
             });
         }
     }, []);
@@ -43,11 +46,12 @@ export default function App() {
                     <Route path='/' element={<Home />} />
                     <Route path='/login' element={<Login />} />
                     <Route path='/register' element={<Register />} />
+                    <Route path='/profile' element={<Profile />} /> {/* new profile route */}
                     <Route path='/dashboard' element={<Dashboard />}>
                         {/* Nested Route with Children */}
                         <Route index element={<Contacts />} />
-                        <Route path='/dashboard/add-contacts' element={<AddContact/>}/>
-                        <Route path='/dashboard/edit-contact/:id' element={<EditContact/>}/>
+                        <Route path='add-contacts' element={<AddContact/>}/>
+                        <Route path='edit-contact/:id' element={<EditContact/>}/>
                     </Route>
                     <Route path='/logout' element={<Logout/>} />
                 </Routes>

@@ -1,6 +1,6 @@
 import { ContactModel } from '../models/Contact.js';
 
-const createContact = async (req, res) => {
+const AddContact = async (req, res) => {
     const { name, email, phone, address } = req.body;
 
     try {
@@ -75,4 +75,4 @@ const deleteContact = async (req, res) => {
     }
 };
 
-export { createContact, getContacts, getContact, updateContact, deleteContact };
+export { AddContact, getContacts, getContact, updateContact, deleteContact };

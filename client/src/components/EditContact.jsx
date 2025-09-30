@@ -5,59 +5,76 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaAt, FaPhoneFlip, FaRegAddressCard, FaUserPlus } from 'react-icons/fa6';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function EditContact() {
     const [values, setValues] = useState({ name: '', email: '', phone: '', address: '' });
-    const navigate = useNavigate(); // Correctly call the useNavigate hook
-    const {id}= useParams()
+    const navigate = useNavigate();
+    const { id } = useParams();
+
     const handleInput = (event) => {
         setValues({ ...values, [event.target.name]: event.target.value });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        axios.put('http://127.0.0.1:3000/contactmyst/update-contacts/'+id, values, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}` // Correct usage of localStorage.getItem
-            }
-        })
-        .then(res => {
-            if (res.data.success) {
-                toast.success("Contact Updated Successfully", {
-                    position: "top-right",
-                    autoClose: 5000
-                });
-                navigate('/dashboard'); // Correct usage of navigate
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        });
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem('token');
+        return token ? { Authorization: `Bearer ${token}` } : {};
     };
-    
-    useEffect(() => {
-      
-        axios.get('http://127.0.0.1:3000/contactmyst/contacts/'+id , {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-        })
-        .then(res => {
-            if (res.data.success) {
-               setValues({
-                name: res.data.name,
-                email:res.data.email,
-                phone:res.data.phone,
-                address:res.data.address
-               })
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await axios.put(`${API_BASE}/contactmyst/update-contacts/${id}`, values, {
+                headers: getAuthHeaders()
+            });
+            const data = res.data;
+            if (data?.success) {
+                toast.success("Contact Updated Successfully", { position: "top-right", autoClose: 3000 });
+                navigate('/dashboard');
+            } else {
+                toast.error(data?.message || 'Failed to update contact');
             }
-           
-        })
-        .catch(err => {
-            console.log(err);
-           
-        });
-    }, []);
+        } catch (err) {
+            console.error('Update contact error', err);
+            const serverData = err.response?.data;
+            toast.error(serverData?.message || 'Network or server error while updating');
+        }
+    };
+
+    useEffect(() => {
+        const fetchContact = async () => {
+            try {
+                const res = await axios.get(`${API_BASE}/contactmyst/contacts/${id}`, {
+                    headers: getAuthHeaders()
+                });
+                const data = res.data;
+                if (data?.success && data?.contact) {
+                    setValues({
+                        name: data.contact.name || '',
+                        email: data.contact.email || '',
+                        phone: data.contact.phone || '',
+                        address: data.contact.address || ''
+                    });
+                } else if (data?.name || data?.email) {
+                    // fallback for APIs that return fields directly
+                    setValues({
+                        name: data.name || '',
+                        email: data.email || '',
+                        phone: data.phone || '',
+                        address: data.address || ''
+                    });
+                } else {
+                    toast.error(data?.message || 'Failed to load contact');
+                }
+            } catch (err) {
+                console.error('Fetch contact error', err);
+                toast.error(err.response?.data?.message || 'Network or server error while fetching contact');
+            }
+        };
+
+        if (id) fetchContact();
+    }, [id]);
+
     return (
         <div className="add-form-container">
             <form className="add-form" onSubmit={handleSubmit}>
@@ -98,7 +115,7 @@ export default function EditContact() {
                 <div className="form-group">
                     <FaRegAddressCard />
                     <input
-                        type="text" // Correct input type for address
+                        type="text"
                         placeholder="Enter Address"
                         className="form-control"
                         name="address"
@@ -106,9 +123,8 @@ export default function EditContact() {
                         value={values.address}
                     />
                 </div>
-                <button className="form-btn">Update</button>
+                <button type="submit" className="form-btn">Update</button>
             </form>
         </div>
     );
 }
- 

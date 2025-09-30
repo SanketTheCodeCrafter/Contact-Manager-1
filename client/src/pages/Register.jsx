@@ -6,6 +6,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000' // change if your server uses another port
+
 export default function Register() {
     const [values, setValues] = useState({ name: '', email: '', password: '' });
     const [errors,setErrors] =useState({})
@@ -15,31 +17,34 @@ export default function Register() {
         setValues({ ...values, [event.target.name]: event.target.value });
     };
 
-    const handleSubmit = (e) => {
+    async function handleSubmit(e) {
         e.preventDefault();
-       const errs= Validation(values)
-       setErrors(errs);
-       if(errs.name=== " "&& errs.email ===" " && errs.password === " ")
-             axios.post('http://127.0.0.1:3000/contactmyst/register', values)
-          .then(res=>{ 
-            if(res.data.success){
+        const errs= Validation(values)
+        setErrors(errs);
+        if(errs.name=== " "&& errs.email ===" " && errs.password === " ")
+            try {
+                const res = await axios.post(`${API_BASE}/contactmyst/register`, values);
+                console.log('registered', res.data);
+                if(res.data.success){
 
-            toast.success("Account created successfully", {
-                position: "top-right",
-                autoClose: 5000
-            })
-            navigate('/login')
-        }
-        }).catch (err=>{
-            if(err.response.data.errors){
-                setServerErrors( err.response.data.errors)
-            } 
-            else
-           {
-                
-             console.log(err)
+                    toast.success("Account created successfully", {
+                        position: "top-right",
+                        autoClose: 5000
+                    })
+                    navigate('/login')
+                }
+            } catch (err) {
+                const serverData = err.response?.data;
+                console.error('Register error', serverData || err.message);
+                if(err.response.data.errors){
+                    setServerErrors( err.response.data.errors)
+                } 
+                else
+               {
+                    
+                 console.log(err)
+                }
             }
-        })
     };
 
     return (
