@@ -7,6 +7,14 @@ import { Router } from './routes/routes.js';
 
 dotenv.config({ path: './.env' }); // load env before using process.env
 
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+app.use('/contactmyst', Router);
+
+const PORT = process.env.PORT || 5000;
+
 // DB connect (merged from config/db.js)
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL;
 if (!MONGO_URI) {
@@ -16,18 +24,17 @@ if (!MONGO_URI) {
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGO_URI);
     console.log('MongoDB connected');
+    
+    app.listen(PORT, () => {
+      console.log(`App is running on port ${PORT}`);
+    });
   } catch (err) {
     console.error('MongoDB connection error:', err.message);
     process.exit(1);
   }
 };
-
-connectDB();
 
 // optional: handle mongoose connection errors/events
 mongoose.connection.on('error', (err) => {
@@ -43,13 +50,4 @@ const gracefulShutdown = async () => {
 process.on('SIGINT', gracefulShutdown);
 process.on('SIGTERM', gracefulShutdown);
 
-const app = express();
-app.use(express.json());
-app.use(cors());
-
-app.use('/contactmyst', Router);
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`App is running on port ${PORT}`);
-});
+connectDB();
