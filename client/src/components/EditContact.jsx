@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import '../assets/css/form.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaAt, FaPhoneFlip, FaRegAddressCard, FaUserPlus } from 'react-icons/fa6';
@@ -29,7 +28,7 @@ export default function EditContact() {
             });
             const data = res.data;
             if (data?.success) {
-                toast.success("Contact Updated Successfully", { position: "top-right", autoClose: 3000 });
+                toast.success("Contact Updated Successfully");
                 navigate('/dashboard');
             } else {
                 toast.error(data?.message || 'Failed to update contact');
@@ -56,7 +55,6 @@ export default function EditContact() {
                         address: data.contact.address || ''
                     });
                 } else if (data?.name || data?.email) {
-                    // fallback for APIs that return fields directly
                     setValues({
                         name: data.name || '',
                         email: data.email || '',
@@ -76,55 +74,98 @@ export default function EditContact() {
     }, [id]);
 
     return (
-        <div className="add-form-container">
-            <form className="add-form" onSubmit={handleSubmit}>
-                <h2>Edit Contact</h2>
-                <div className="form-group">
-                    <FaUserPlus />
-                    <input
-                        type="text"
-                        placeholder="Enter Name"
-                        className="form-control"
-                        name="name"
-                        onChange={handleInput}
-                        value={values.name}
-                    />
-                </div>
-                <div className="form-group">
-                    <FaAt />
-                    <input
-                        type="email"
-                        placeholder="Enter Email"
-                        className="form-control"
-                        name="email"
-                        onChange={handleInput}
-                        value={values.email}
-                    />
-                </div>
-                <div className="form-group">
-                    <FaPhoneFlip />
-                    <input
-                        type="text"
-                        placeholder="Enter Phone Number"
-                        className="form-control"
-                        name="phone"
-                        onChange={handleInput}
-                        value={values.phone}
-                    />
-                </div>
-                <div className="form-group">
-                    <FaRegAddressCard />
-                    <input
-                        type="text"
-                        placeholder="Enter Address"
-                        className="form-control"
-                        name="address"
-                        onChange={handleInput}
-                        value={values.address}
-                    />
-                </div>
-                <button type="submit" className="form-btn">Update</button>
-            </form>
+        <div className="form-container">
+            <div className="card form-card">
+                <h2 className="text-center" style={{ marginBottom: '2rem' }}>Edit Contact</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label className="form-label">Full Name</label>
+                        <div className="input-icon-wrapper">
+                            <FaUserPlus className="input-icon" />
+                            <input
+                                type="text"
+                                placeholder="Enter Name"
+                                className="form-control with-icon"
+                                name="name"
+                                onChange={handleInput}
+                                value={values.name}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">Email Address</label>
+                        <div className="input-icon-wrapper">
+                            <FaAt className="input-icon" />
+                            <input
+                                type="email"
+                                placeholder="Enter Email"
+                                className="form-control with-icon"
+                                name="email"
+                                onChange={handleInput}
+                                value={values.email}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">Phone Number</label>
+                        <div className="input-icon-wrapper">
+                            <FaPhoneFlip className="input-icon" />
+                            <input
+                                type="text"
+                                placeholder="Enter Phone Number"
+                                className="form-control with-icon"
+                                name="phone"
+                                onChange={handleInput}
+                                value={values.phone}
+                            />
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">Address</label>
+                        <div className="input-icon-wrapper">
+                            <FaRegAddressCard className="input-icon" />
+                            <input
+                                type="text"
+                                placeholder="Enter Address"
+                                className="form-control with-icon"
+                                name="address"
+                                onChange={handleInput}
+                                value={values.address}
+                            />
+                        </div>
+                    </div>
+                    <button type="submit" className="btn-primary full-width" style={{ marginTop: '1rem' }}>Update Contact</button>
+                </form>
+            </div>
+
+            <style>{`
+                .form-container {
+                    display: flex;
+                    justify-content: center;
+                    padding-top: 2rem;
+                }
+                .form-card {
+                    width: 100%;
+                    max-width: 500px;
+                }
+                .input-icon-wrapper {
+                    position: relative;
+                }
+                .input-icon {
+                    position: absolute;
+                    left: 1rem;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: var(--text-muted);
+                    z-index: 1;
+                }
+                .form-control.with-icon {
+                    padding-left: 2.5rem;
+                }
+                .full-width {
+                    width: 100%;
+                }
+            `}</style>
         </div>
     );
 }

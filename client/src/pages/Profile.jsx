@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../App';
-import '../assets/css/form.css';
+import { FaUserEdit, FaArrowLeft } from 'react-icons/fa';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -10,7 +10,7 @@ function initials(name = '') {
   return name
     .split(' ')
     .map(s => s[0] || '')
-    .slice(0,2)
+    .slice(0, 2)
     .join('')
     .toUpperCase();
 }
@@ -68,100 +68,174 @@ export default function Profile() {
 
   const joined = useMemo(() => formatDate(user?.createdAt), [user]);
 
-  const cardStyle = {
-    maxWidth: 900,
-    margin: '28px auto',
-    padding: 24,
-    borderRadius: 10,
-    boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
-    background: '#fff',
-    display: 'grid',
-    gridTemplateColumns: '160px 1fr',
-    gap: 20,
-    alignItems: 'center'
-  };
-
-  const avatarStyle = {
-    width: 140,
-    height: 140,
-    borderRadius: '50%',
-    background: '#2d8cff',
-    color: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: 40,
-    fontWeight: 700,
-    boxShadow: '0 6px 12px rgba(0,0,0,0.08)'
-  };
-
   if (loading) {
-    return (
-      <div style={{maxWidth: 900, margin: '48px auto', padding: 24}}>
-        <div style={{height: 180, borderRadius: 10, background: '#fff', boxShadow: '0 6px 18px rgba(0,0,0,0.06)', padding: 20}}>
-          <div style={{display:'flex', gap:20}}>
-            <div style={{...avatarStyle, opacity: 0.2}} />
-            <div style={{flex:1}}>
-              <div style={{height:18, width:'40%', background:'#eee', borderRadius:6, marginBottom:12}} />
-              <div style={{height:14, width:'60%', background:'#eee', borderRadius:6, marginBottom:8}} />
-              <div style={{height:14, width:'30%', background:'#eee', borderRadius:6}} />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="loading-state">Loading profile...</div>;
   }
 
   if (error) {
-    return <div style={{maxWidth:900, margin:'48px auto', padding:24, color:'#c0392b'}}>Error: {error}</div>;
+    return <div className="error-state">Error: {error}</div>;
   }
 
   if (!user) {
-    return <div style={{maxWidth:900, margin:'48px auto', padding:24}}>No profile data</div>;
+    return <div className="empty-state">No profile data</div>;
   }
 
   return (
-    <div style={cardStyle}>
-      <div style={{textAlign:'center'}}>
-        <div style={avatarStyle}>{initials(user.name)}</div>
-        <div style={{marginTop:12, fontSize:13, color:'#666'}}>{user.role || 'User'}</div>
-      </div>
-
-      <div>
-        <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12}}>
-          <h2 style={{margin:0}}>{user.name || '—'}</h2>
-          <div style={{display:'flex', gap:8}}>
-            <Link to="/profile-edit" style={{textDecoration:'none'}}>
-              <button style={{padding:'8px 12px', borderRadius:6, border:'1px solid #ddd', background:'#fff', cursor:'pointer'}}>Edit</button>
+    <div className="profile-container">
+      <div className="card profile-card">
+        <div className="profile-header">
+          <div className="profile-avatar">
+            {initials(user.name)}
+          </div>
+          <div className="profile-title">
+            <h2>{user.name}</h2>
+            <span className="role-badge">{user.role || 'User'}</span>
+          </div>
+          <div className="profile-actions">
+            <Link to="/dashboard" className="btn-secondary">
+              <FaArrowLeft /> Back
             </Link>
-            <Link to="/dashboard" style={{textDecoration:'none'}}>
-              <button style={{padding:'8px 12px', borderRadius:6, border:'none', background:'#2d8cff', color:'#fff', cursor:'pointer'}}>Back</button>
+            <Link to="/profile-edit" className="btn-primary">
+              <FaUserEdit /> Edit
             </Link>
           </div>
         </div>
 
-        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:12}}>
-          <div style={{padding:12, borderRadius:8, background:'#f7f9fc'}}>
-            <div style={{fontSize:12, color:'#888'}}>Email</div>
-            <div style={{fontSize:15}}>{user.email || '—'}</div>
+        <div className="profile-grid">
+          <div className="info-group">
+            <label>Email Address</label>
+            <div className="info-value">{user.email}</div>
           </div>
-
-          <div style={{padding:12, borderRadius:8, background:'#f7f9fc'}}>
-            <div style={{fontSize:12, color:'#888'}}>Joined</div>
-            <div style={{fontSize:15}}>{joined || '—'}</div>
+          <div className="info-group">
+            <label>Member Since</label>
+            <div className="info-value">{joined}</div>
           </div>
-
-          <div style={{gridColumn:'1 / -1', padding:12, borderRadius:8, background:'#fbfbfe'}}>
-            <div style={{fontSize:12, color:'#888'}}>About</div>
-            <div style={{fontSize:15, color:'#333'}}>{user.about || 'No additional info provided.'}</div>
+          <div className="info-group full">
+            <label>About</label>
+            <div className="info-value">{user.about || 'No additional info provided.'}</div>
           </div>
         </div>
 
-        {/* extra metadata */}
-        <div style={{marginTop:16, color:'#999', fontSize:13}}>
+        <div className="profile-footer">
           ID: {user._id}
         </div>
       </div>
+
+      <style>{`
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            padding-top: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .profile-card {
+            width: 100%;
+            max-width: 800px;
+            padding: 3rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 4px solid var(--surface);
+        }
+
+        .profile-title {
+            flex: 1;
+        }
+
+        .profile-title h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .info-group {
+            background-color: rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .info-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .info-group label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .profile-footer {
+            margin-top: 2rem;
+            text-align: right;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+            
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+      `}</style>
     </div>
   );
 }
